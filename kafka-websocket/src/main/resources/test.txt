@@ -1,0 +1,83 @@
+In Apache Kafka, a consumer group is a group of consumers that share the same group ID. Kafka ensures that each partition is consumed by exactly one consumer within the same consumer group. This means that messages can be processed in parallel by multiple consumers in the same group, but each message will only be processed by one consumer in that group.
+
+You don't explicitly "create" a consumer group like you would a topic. Instead, a consumer group is created automatically when you start a Kafka consumer with a specific group ID. If the group ID already exists, the consumer joins that group. If the group ID doesn't exist, Kafka creates a new consumer group.
+
+### Steps to Create a Consumer Group in Kafka
+
+1. **Start ZooKeeper** (if it's not already running):
+   ```cmd
+   cd C:\kafka
+   .\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+   ```
+
+2. **Start Kafka** (if it's not already running):
+   ```cmd
+   cd C:\kafka
+   .\bin\windows\kafka-server-start.bat .\config\server.properties
+   ```
+
+3. **Create a Topic** (if it doesn't already exist):
+   ```cmd
+   cd C:\kafka
+   .\bin\windows\kafka-topics.bat --create --topic my-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+   ```
+
+4. **Start a Consumer with a New Group ID**:
+   - Open a new Command Prompt window.
+   - Navigate to the Kafka directory:
+     ```cmd
+     cd C:\kafka
+     ```
+
+   - Start the consumer with a new group ID (e.g., `my-new-group`):
+     ```cmd
+     .\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic --group my-new-group --from-beginning
+     ```
+
+   - This command will create a new consumer group `my-new-group` if it doesn't already exist.
+
+5. **Verify the Consumer Group**:
+   - Open another Command Prompt window.
+   - Navigate to the Kafka directory:
+     ```cmd
+     cd C:\kafka
+     ```
+
+   - Describe the consumer group to see its details:
+     ```cmd
+     .\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-new-group --describe
+     ```
+
+### Example Commands
+
+#### Start ZooKeeper
+```cmd
+cd C:\kafka
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+```
+
+#### Start Kafka
+```cmd
+cd C:\kafka
+.\bin\windows\kafka-server-start.bat .\config\server.properties
+```
+
+#### Create a Topic
+```cmd
+cd C:\kafka
+.\bin\windows\kafka-topics.bat --create --topic my-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
+
+#### Start a Consumer with a New Group ID
+```cmd
+cd C:\kafka
+.\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic --group my-new-group --from-beginning
+```
+
+#### Describe the Consumer Group
+```cmd
+cd C:\kafka
+.\bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --group my-new-group --describe
+```
+
+By running these commands, you will create a new consumer group in Kafka, associate it with a topic, and start consuming messages. The consumer group will be created automatically when you start the consumer with the specified group ID.
