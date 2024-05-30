@@ -1,0 +1,33 @@
+OpenID Connect (OIDC) and OAuth 2.0 are related but serve different purposes in the realm of authentication and authorization. Therefore, there are distinctions between OidcUser and OAuth2User:
+
+1. **Purpose**:
+   - **OAuth 2.0**: Primarily focuses on delegated authorization scenarios, allowing a third-party application to obtain limited access to a user's resources on another service without exposing the user's credentials.
+   - **OpenID Connect (OIDC)**: Built on top of OAuth 2.0, it adds an authentication layer, providing an identity layer on the authorization protocol. It allows clients to verify the identity of the end-user based on the authentication performed by an authorization server, and to obtain basic profile information about the end-user in an interoperable and REST-like manner.
+
+2. **User Representation**:
+   - **OAuth2User**: Represents a user authenticated via OAuth 2.0. It typically contains information about the user's authentication, such as access tokens and possibly some basic profile information obtained during the OAuth 2.0 authentication process.
+   - **OidcUser**: Represents a user authenticated via OpenID Connect. It extends OAuth2User to include additional OpenID Connect specific claims, such as ID Token, UserInfo, and possibly other OIDC-specific attributes, in addition to the information provided by OAuth2User.
+
+3. **Usage**:
+   - **OAuth2User**: Used in OAuth 2.0 authentication scenarios where the focus is primarily on authorization, such as accessing protected resources on a resource server.
+   - **OidcUser**: Used in OpenID Connect authentication scenarios where the focus is on both authentication and authorization, such as obtaining user identity information and performing single sign-on (SSO) across multiple applications.
+
+In summary, while both OidcUser and OAuth2User represent authenticated users, OidcUser specifically caters to OpenID Connect authentication scenarios and includes additional identity-related information on top of the OAuth 2.0 authentication details provided by OAuth2User.
+
+#### Difference between `DefaultAccessTokenConverter` and `TokenEnhancer`
+
+## DefaultAccessTokenConverter -> is use to customize the authPrincipal [after token validation] while TokenEnhancer use to add more details to token while generating token
+
+`DefaultAccessTokenConverter` and `TokenEnhancer` serve different purposes in the OAuth 2.0 framework. Here's how they differ:
+
+1. **DefaultAccessTokenConverter**:
+   - **Purpose**: `DefaultAccessTokenConverter` is a class provided by Spring Security OAuth that handles the conversion of token claims into an `OAuth2Authentication` object during token introspection.
+   - **Functionality**: It converts token claims (like user details) into an `OAuth2Authentication` object, which represents the authenticated principal along with associated authorities and details.
+   - **Customization**: You can extend `DefaultAccessTokenConverter` to customize the conversion process if you need to handle token claims differently or extract additional information during token introspection.
+
+2. **TokenEnhancer**:
+   - **Purpose**: `TokenEnhancer` is an interface provided by Spring Security OAuth that allows you to enhance OAuth 2.0 access tokens with custom information.
+   - **Functionality**: Implementations of `TokenEnhancer` can add custom data to the access token, such as user-specific information or additional metadata.
+   - **Customization**: You can implement the `TokenEnhancer` interface to add custom claims or metadata to the access token based on your application's requirements. This custom data can then be used by resource servers or clients that consume the access token.
+
+In summary, while both `DefaultAccessTokenConverter` and `TokenEnhancer` deal with OAuth 2.0 access tokens, they serve different purposes. `DefaultAccessTokenConverter` focuses on converting token claims into authentication details, while `TokenEnhancer` focuses on adding custom information to the access token itself.

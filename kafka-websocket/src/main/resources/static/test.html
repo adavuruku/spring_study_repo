@@ -29,12 +29,18 @@
 
         function sendMessage() {
             const messageContent = document.getElementById("message").value;
-            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({'content': messageContent, 'sender': 'User1', 'type': 'CHAT'}));
+            const user = document.getElementById("user").value;
+            const type = document.getElementById("type").value;
+            const msg = {
+                content: messageContent, sender: user, type: type
+            }
+            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(msg));
         }
 
         function showMessage(message) {
             const response = document.getElementById("response");
             const p = document.createElement("p");
+            console.log(message)
             p.appendChild(document.createTextNode(message.sender + ": " + message.content));
             response.appendChild(p);
         }
@@ -47,6 +53,15 @@
 <body>
 <div>
     <input type="text" id="message" placeholder="Enter your message here..."/>
+    <select id="type">
+        <option>CHAT</option>
+        <option>JOIN</option>
+        <option>LEAVE</option>
+    </select>
+    <select id="user">
+        <option>User_2</option>
+        <option>User_3</option>
+    </select>
     <button onclick="sendMessage()">Send</button>
 </div>
 <div id="response"></div>

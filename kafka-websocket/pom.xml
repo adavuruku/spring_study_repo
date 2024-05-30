@@ -55,6 +55,15 @@
 			<artifactId>sockjs-client</artifactId>
 			<version>1.5.1</version>
 		</dependency>
+<!--		https://medium.com/@sehgal.mohit06/asynchronous-data-loading-with-observer-pattern-to-show-status-of-job-completion-15f54a36bd4d-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.13</artifactId>
+		</dependency>
 
 	</dependencies>
 
