@@ -9,76 +9,42 @@ import org.springframework.core.Ordered;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final CustomUserDetailsService customUserDetailsService;
-
-    @Bean
-    public FilterRegistrationBean<DelegatingFilterProxy> springSecurityFilterChain() {
-        DelegatingFilterProxy filterProxy = new DelegatingFilterProxy();
-        filterProxy.setTargetBeanName(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME);
-
-        FilterRegistrationBean<DelegatingFilterProxy> filterRegistrationBean = new FilterRegistrationBean<>(filterProxy);
-        filterRegistrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return filterRegistrationBean;
-    }
-
-    @Bean
-    public CustomUserDetailsService userDetailsPasswordService(UserRepository userRepository) {
-        return new CustomUserDetailsService(userRepository); // Assuming CustomUserDetailsService implements UserDetailsPasswordService
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(customUserDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authorizeRequests ->
+        http
+                .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/login", "/oauth/token", "/oauth/authorize/**").permitAll()
                                 .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults()) // Configures form login
-                .oauth2Login(
-                        oauth2Login ->
-                            oauth2Login
-                                .userInfoEndpoint(
-                                        userInfoEndpoint ->
-                                            userInfoEndpoint
-                                                .userService(customOAuth2UserService())
-                                                .oidcUserService(customOidcUserService()))
-
-                );
-
+                .formLogin(withDefaults());
         return http.build();
     }
 
     @Bean
-    public CustomOAuth2UserService customOAuth2UserService() {
-        return new CustomOAuth2UserService(customUserDetailsService);
-    }
-
-    @Bean
-    public CustomOidcUserService customOidcUserService() {
-        return new CustomOidcUserService(customOAuth2UserService());
+    public UserDetailsService userDetailsService() {
+        var userDetailsManager = new InMemoryUserDetailsManager();
+        var user = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("password")
+                .roles("USER")
+                .build();
+        userDetailsManager.createUser(user);
+        return userDetailsManager;
     }
 }
